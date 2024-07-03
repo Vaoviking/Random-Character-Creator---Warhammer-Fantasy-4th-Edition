@@ -1,3 +1,4 @@
+// Data arrays
 const races = [
     "Averlander", "Hochlander", "Middenlander", "Nordlander", "Talabechlander",
     "Ostermarker", "Ostlander", "Reiklander", "Stirlander", "Wissenlander",
@@ -31,12 +32,19 @@ const careers = [
     "Wrecker", "DING DING - 100xp bonus og genrul"
 ];
 
+// Function to get random element from an array
 function getRandomElement(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateCharacteristics() {
-    return {
+// Function to roll 2d10
+function roll2d10() {
+    return Math.floor(Math.random() * 10) + 1 + Math.floor(Math.random() * 10) + 1;
+}
+
+// Generate characteristics with race adjustments
+function generateCharacteristics(race) {
+    const baseCharacteristics = {
         WS: roll2d10() + 20,
         BS: roll2d10() + 20,
         S: roll2d10() + 20,
@@ -48,16 +56,40 @@ function generateCharacteristics() {
         WP: roll2d10() + 20,
         Fel: roll2d10() + 20
     };
+
+    switch (race) {
+        case "Dwarf":
+            baseCharacteristics.T += 10;
+            baseCharacteristics.WP += 10;
+            baseCharacteristics.Dex -= 10;
+            baseCharacteristics.Ag -= 10;
+            break;
+        case "High Elf":
+        case "Wood Elf":
+            baseCharacteristics.Dex += 10;
+            baseCharacteristics.Int += 10;
+            baseCharacteristics.T -= 10;
+            baseCharacteristics.Fel -= 10;
+            break;
+        case "Halfling":
+            baseCharacteristics.BS += 10;
+            baseCharacteristics.Ag += 10;
+            baseCharacteristics.S -= 10;
+            baseCharacteristics.WP -= 10;
+            break;
+        // Add other race adjustments as needed
+        default:
+            break;
+    }
+
+    return baseCharacteristics;
 }
 
-function roll2d10() {
-    return Math.floor(Math.random() * 10) + 1 + Math.floor(Math.random() * 10) + 1;
-}
-
+// Generate a random character
 function generateCharacter() {
     const race = getRandomElement(races);
     const career = getRandomElement(careers);
-    const characteristics = generateCharacteristics();
+    const characteristics = generateCharacteristics(race);
     
     return {
         race,
@@ -66,6 +98,7 @@ function generateCharacter() {
     };
 }
 
+// Display the character details
 function displayCharacter(character) {
     const characterDetails = document.getElementById('characterDetails');
     characterDetails.innerHTML = `
@@ -84,13 +117,26 @@ function displayCharacter(character) {
             <li>WP: ${character.characteristics.WP}</li>
             <li>Fel: ${character.characteristics.Fel}</li>
         </ul>
+        <button id="nextStep">Next</button>
+    `;
+
+    document.getElementById('nextStep').addEventListener('click', generateNextStep);
+}
+
+// Function for the next step (add more steps as needed)
+function generateNextStep() {
+    const characterDetails = document.getElementById('characterDetails');
+    characterDetails.innerHTML += `
+        <p>Next steps will be added here...</p>
         <button onclick="reRoll()">Re-roll</button>
     `;
 }
 
+// Re-roll the character
 function reRoll() {
     const character = generateCharacter();
     displayCharacter(character);
 }
 
+// Event listener for the generate character button
 document.getElementById('generateCharacter').addEventListener('click', reRoll);
